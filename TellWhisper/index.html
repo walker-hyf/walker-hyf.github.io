@@ -1,1 +1,1316 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>TellWhisper</title>
+		<link type="text/css" href="./css/basic.css" rel="stylesheet">
+		<link type="text/css" href="./css/index.css" rel="stylesheet">
+		<link type="text/css" href="./css/bootstrap.min.css" rel="stylesheet">
+		<script type='text/javascript' src="./js/jquery-3.3.1.min.js"></script>
+		
+	</head>
+	<body>
+		
+		<div class="main">
+			<div class="title" style="display: flex;
+									  align-items: center;
+									  justify-content: center;
+									  width: 100%;
+									  margin: 0 auto;">
+				<!-- <div><img src="img/agent.png" style="width: 5rem; height: 5rem; margin-right: 1rem;" alt="Agent Image"/></div> -->
+			    
+			    <div style="z-index: 2; color: white;">
+					TellWhisper: Tell Whisper Who Speaks When
+				</div>
+			</div>
+			<div class="content">
+				<div class="section author">
+					<span>
+						Yifan Hu<sup>1,2</sup>, Peiji Yang<sup>2</sup>, Zhisheng Wang<sup>2</sup>, Yicheng Zhong<sup>2</sup>, Rui Liu<sup>1*</sup> </br>
+						<sup>1</sup> Inner Mongolia University, Hohhot, China </br>
+						<sup>2</sup> Tencent Technology Co.Ltd, Shenzhen, China
+					</span>
+				</div>
+				
+				<!-- ///////// -->
+				<div class="section toc">
+					<div class="section-title">LIST</div>
+					<div class="section-content">
+						<ul>
+							<li><a href="#abstract">1. ABSTRACT</a></li>
+							<li><a href="#method">2. METHOD</a></li>
+							<li>
+								<a href="#experiments">3. EXPERIMENTS</a>
+								<ul>
+									<li><a href="#exp-1" style="padding-left: 2rem;">3.1 Examples of TellWhisper on Different Datasets</a></li>
+									<li><a href="#exp-2" style="padding-left: 2rem;">3.2 Examples of Hyper-SD on Different Datasets</a></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- ///////// -->
+				
+								
+				<div class="section"><a name="abstract"></a>
+					<div class="section-title">1. ABSTRACT</div>
+					<div class="section-content abstract">
+						Multi-speaker automatic speech recognition (MASR) aims to predict ''<i>who spoke when and what</i> '' from multi-speaker speech, a key technology for multi-party dialogue understanding. However, most existing approaches decouple temporal modeling and speaker modeling when addressing ''<i>when</i> '' and ''<i>who</i> '': some inject speaker cues before encoding (e.g., speaker masking), which can cause irreversible information loss; others fuse identity by mixing speaker posteriors after encoding, which may entangle acoustic content with speaker identity. This separation is brittle under rapid turn-taking and overlapping speech, often leading to degraded performance. To address these limitations, we propose <b>TellWhisper</b>, a unified framework that jointly models speaker identity and temporal within the speech encoder. Specifically, we design <b>TS-RoPE</b>, a time-speaker rotary positional encoding: time coordinates are derived from frame indices, while speaker coordinates are derived from speaker activity and pause cues. By applying region-specific rotation angles, the model explicitly captures per-speaker continuity, speaker-turn transitions, and state dynamics, enabling the attention mechanism to simultaneously attend to ''<i>when</i> '' and ''<i>who</i> ''. Moreover, to estimate frame-level speaker activity, we develop <b>Hyper-SD</b>, which casts speaker classification in hyperbolic space to enhance inter-class separation and refine speaker-activity estimates. Extensive experiments demonstrate the effectiveness of the proposed approach. The project webpage is available at <a href="https://tellwhisper.github.io">https://tellwhisper.github.io</a>.
+					</div> 
+				</div>
+				
+				<div class="section"><a name="method"></a>
+					<div class="section-title">2. METHOD</div>
+					<div class="section-content method_image">
+						<img style="display: block; width: 80%; margin: 0 auto;" src="img/ASR.png"/>
+					</div> 
+				</div>
+				
+				<div class="section"><a name="experiments"></a>
+					<div class="section-title"><a name="3"></a>3. EXPERIMENTS</div>
+					
+					<!-- ///////////////////// exp-1 ///////////////////// -->
+					<a name="exp-1"></a>
+					<div class="section-content">
+						<div class="subsection-title"><a name="3"></a>3.1 Examples of TellWhisper on Different Datasets</div>
+					</div>
+					
+					<!-- sample 1 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #1:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from Libri2Mix)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/1.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												<span>spk_1 <|0.00|> <|5.32|> i gave him a little brandy and left him collapsed in a chair while i made a most careful examination of the room</span>
+												<br />
+												<span>spk_2 <|0.00|> <|4.72|> not at all you are on the contrary most agreeable to me</span>
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												<span>spk_1 <|0.00|> <|5.32|> i gave him a little andy and left him collapsed in a chair where i made a most careful examination of the room</span>
+												<br />
+												<span>spk_2 <|0.00|> <|4.82|> not at all you are on the contrary most agreeable to me</span>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- sample 2 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #2:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from Libri2Mix)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/2.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												<span>spk_1 <|0.00|> <|16.12|> at that epoch of pristine simplicity however matters of even slighter public interest and of far less intrinsic weight than the welfare of hester and her child were strangely mixed up with the deliberations of legislators and acts of state</span>
+												</br>
+												<span>spk_2 <|0.00|> <|8.05|> they must have some characteristic which makes us regard them as referring to more or less remote portions of the past</span>
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												<span>spk_1 <|0.00|> <|16.12|> at that epoch of pristine simplicity however matters of even slighter public interest and of far less intrinsic weight than the welfare of hester and her child were strangely mixed up with the deliberations of legislators and acts of state</span>
+												</br>
+												<span>spk_2 <|0.00|> <|8.14|> they must have some characteristic which makes us regard them as referring to a more or less remote portion of the past</span>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- sample 3 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #3:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AMI)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/3.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												spk_1 <|0.00|> <|1.37|> funky sh stuff like that <br />
+												spk_2 <|0.59|> <|6.48|> wonder how much of the meetings is talking about the stuff at the meetings yeah<br />
+												spk_3 <|3.21|> <|5.01|> yeah exactly yeah yeah yeah<br />
+												spk_1 <|3.38|> <|11.76|> yeah yeah look at all this stuff man okay right<br />
+												spk_4 <|8.23|> <|8.58|> okay<br />
+												spk_3 <|12.83|> <|13.29|> should we<br />
+												spk_4 <|11.95|> <|14.85|> so what do we need to talk about<br />
+												spk_1 <|14.61|> <|15.11|> has anybody<br />
+												spk_3 <|14.84|> <|24.85|> well should we just go around and everyone says what they d what they've been doing how far they've well i hope so<br />
+												spk_1 <|18.71|> <|23.32|> has anybody done anything got<br />
+												spk_2 <|21.10|> <|22.92|> not a lot no<br />
+												spk_4 <|25.39|> <|25.78|> yeah<br />
+												spk_2 <|25.13|> <|29.40|> hmm okay sounds like you've done some stuff so<br />
+												spk_1 <|28.06|> <|29.53|> you better start<br />
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5" style="text-align: left">
+											spk_1 <|0.00|> <|1.32|> funky stuff like that <br />
+											spk_2 <|0.58|> <|6.39|> i wonder how much of the meetings is talking about the stuff at the meetings<br />
+											spk_3 <|3.22|> <|5.06|> yeah exactly yeah yeah yeah<br />
+											spk_1 <|4.58|> <|11.76|> yeah look at all this stuff man okay right<br />
+											spk_3 <|12.81|> <|13.53|> should we<br />
+											spk_4 <|11.93|> <|14.88|> so we need to talk about it<br />
+											spk_1 <|14.61|> <|15.11|> has anybody<br />
+											spk_3 <|14.84|> <|24.81|> well should we just go around and everyone says what they what they've been doing how far they've well i hope so<br />
+											spk_1 <|18.21|> <|23.12|> has anybody done anything got<br />
+											spk_2 <|21.16|> <|29.55|> not a lot no yeah okay sounds like you've done some stuff so<br />
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- sample 4 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #4:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AMI)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/4.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												spk_1 <|0.00|> <|3.66|> the double click will do that and so save them the trouble of right clicking and choosing the item on the menu<br />
+												spk_2 <|0.02|> <|0.86|> yeah<br />
+												spk_2 <|3.74|> <|7.89|> i don't see there's anything obvious that was that would be able you know that would be<br />
+												spk_3 <|3.85|> <|4.21|> yeah<br />
+												spk_1 <|7.00|> <|10.28|> well it might come to us as we start playing with it<br />
+												spk_3 <|10.36|> <|10.66|> yeah<br />
+												spk_4 <|10.47|> <|12.54|> what was that i didn't quite understand do you mean<br />
+												spk_1 <|12.39|> <|23.70|> um like we have the the right click menu you'll have the menu right click it but instead of like have a default double click so if there's a de so it'll be a choice from the menu but yeah exactly yeah<br />
+												spk_3 <|12.81|> <|13.52|> uh just let th<br />
+												spk_4 <|14.63|> <|15.07|> yeah<br />
+												spk_4 <|19.16|> <|25.01|> oh so and it figures out what's the most common use to double click oh okay<br />
+												spk_3 <|19.61|> <|19.89|> yep<br />
+												spk_3 <|22.57|> <|22.81|> yeah<br />
+												spk_3 <|24.65|> <|28.47|> like i don't know show the speaker characterisation for instance or just<br />
+												spk_1 <|27.03|> <|27.33|> yeah<br />
+												spk_2 <|27.30|> <|29.99|> yeah but then then there's the problem with a lot of windows<br />
+												spk_4 <|27.52|> <|27.88|> yeah<br />
+												spk_3 <|28.47|> <|28.79|> i don't know<br />
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5" style="text-align: left">
+											spk_1 <|0.00|> <|3.89|> the double click won't do that and so save them the trouble of right clicking and choosing the item on the menu<br />
+											spk_2 <|0.04|> <|0.86|> yeah<br />
+											spk_2 <|3.76|> <|7.72|> i don't see there's anything obvious that wou that would be able you know that would be<br />
+											spk_3 <|3.76|> <|4.20|> yeah<br />
+											spk_1 <|7.06|> <|10.34|> well you might come to us and start playing with it<br />
+											spk_3 <|10.30|> <|10.66|> yeah<br />
+											spk_4 <|10.47|> <|12.54|> what was that other coins then do you mean is it yeah<br />
+											spk_1 <|12.42|> <|24.82|> um like we have the the right click menu if you have the menu right clicking but instead of like have a default double click so there's still be a choice from the menu but yeah exactly yeah<br />
+											spk_3 <|12.86|> <|13.62|> uh just let the<br />
+											spk_4 <|19.12|> <|25.00|> oh sorry and it figures out what's the most common used double click okay okay<br />
+											spk_3 <|22.55|> <|22.78|> yeah<br />
+											spk_3 <|24.63|> <|28.48|> like i don't know show the speaker characterisation for instance or just<br />
+											spk_2 <|27.31|> <|29.98|> yeah but then then there's the problem with a lot of windows<br />
+											spk_4 <|27.53|> <|27.98|> yeah<br />
+											spk_3 <|28.27|> <|28.56|> i don't know<br />
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- sample 5 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #5:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from NotSoFar)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/5.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												spk_1 <|0.00|> <|2.96|> know we forget about them so what do you say uh linda<br />
+												spk_2 <|2.43|> <|3.38|> forget<br />
+												spk_2 <|3.65|> <|4.27|> about whom<br />
+												spk_1 <|4.00|> <|4.88|> the older people<br />
+												spk_2 <|4.87|> <|6.85|> oh the older people yes yes of course<br />
+												spk_1 <|6.61|> <|9.59|> they need uh we need we need it's not only children and uh<br />
+												spk_2 <|7.18|> <|7.81|> of course<br />
+												spk_2 <|9.59|> <|10.06|> right<br />
+												spk_1 <|9.61|> <|11.87|> and greenery it's also uh their place<br />
+												spk_3 <|11.09|> <|13.06|> so what would you suggest rachel<br />
+												spk_1 <|12.54|> <|13.67|> what do you say ron<br />
+												spk_4 <|13.96|> <|23.50|> well i think yeah i think about the children first you know that uh that there needs to be playgrounds there needs to be different areas where they can run around<br />
+												spk_1 <|22.54|> <|22.89|> we<br />
+												spk_1 <|23.70|> <|24.06|> this<br />
+												spk_4 <|23.90|> <|24.32|> um<br />
+												spk_1 <|24.08|> <|29.81|> but this is automatic this is what we do no matter of what what i was trying to to bring in here is<br />
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5" style="text-align: left">
+											spk_1 <|0.00|> <|2.90|> know we forget about that so what do you say uh inter<br />
+											spk_2 <|2.50|> <|4.24|> forget about who<br />
+											spk_1 <|3.98|> <|5.00|> the older people<br />
+											spk_2 <|4.88|> <|7.66|> oh the older people yes yes of course of course<br />
+											spk_1 <|6.62|> <|13.66|> they need uh we need we need it's not only children and uh and greenery it's also uh their place what do you say wrong<br />
+											spk_2 <|9.56|> <|9.88|> right<br />
+											spk_3 <|11.18|> <|13.04|> so what would you suggest rachel<br />
+											spk_4 <|13.96|> <|24.32|> uh i think yeah i think about the children first you know that uh that there needs to be playgrounds there needs to be uh different areas where they can run around um<br />
+											spk_1 <|22.66|> <|29.80|> we this but this is automatic this is what we do no matter of what what i was trying to to bring in here is<br />
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<!-- sample 6 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #6:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from NotSoFar)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/6.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												spk_1 <|0.00|> <|9.83|> say ron set a list and uh and uh submit it on on this meeting to the uh to the people that really do uh put it together<br />
+												spk_2 <|9.81|> <|15.49|> yeah i mean let's think about the environment that we're in because you know it's uh it's a hot area<br />
+												spk_3 <|9.97|> <|10.44|> mmm<br />
+												spk_1 <|15.54|> <|15.97|> yes<br />
+												spk_2 <|15.84|> <|21.31|> you know having during you know uh an area during the summer that can be used let's say with<br />
+												spk_4 <|21.27|> <|22.43|> a shaded<br />
+												spk_2 <|21.37|> <|21.40|> uh<br />
+												spk_1 <|21.73|> <|23.35|> absolutely the shade<br />
+												spk_2 <|21.76|> <|23.93|> with with shade and but also<br />
+												spk_3 <|21.77|> <|22.45|> shade<br />
+												spk_3 <|22.62|> <|24.66|> shade is very important yeah<br />
+												spk_2 <|24.37|> <|26.87|> but also with with water so<br />
+												spk_4 <|24.96|> <|26.12|> also water<br />
+												spk_3 <|25.02|> <|25.31|> yeah<br />
+												spk_3 <|26.11|> <|26.50|> mmm<br />
+												spk_1 <|26.39|> <|28.99|> and and pets we didn't talk about the pets<br />
+												spk_4 <|26.45|> <|27.07|> yeah<br />
+												spk_3 <|28.65|> <|29.67|> of course there<br />
+												spk_1 <|29.34|> <|29.94|> this is<br />
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5" style="text-align: left">
+											spk_1 <|0.00|> <|9.86|> say ron uh center list and uh and uh submit it on this meeting to the uh to the people that really do uh put it together<br />
+											spk_2 <|9.74|> <|15.50|> yeah and let's think about the environment that we're in because you know it's uh it's a hot area<br />
+											spk_3 <|10.14|> <|10.60|> mmm<br />
+											spk_1 <|15.52|> <|16.04|> yes<br />
+											spk_2 <|15.90|> <|21.32|> you know having during you know uh an area during the summer that can be used let's say with<br />
+											spk_4 <|21.32|> <|22.20|> the shaded<br />
+											spk_2 <|21.37|> <|23.94|> uh with shade and but also<br />
+											spk_1 <|21.72|> <|23.35|> absolutely the shade<br />
+											spk_3 <|21.77|> <|24.68|> shade shade is very important yeah<br />
+											spk_2 <|24.33|> <|26.78|> but also with with water so<br />
+											spk_4 <|24.94|> <|26.11|> also water<br />
+											spk_3 <|25.12|> <|25.36|> yeah<br />
+											spk_1 <|26.41|> <|29.94|> and the pets we didn't talk about the pets this is<br />
+											spk_3 <|28.65|> <|29.67|> of course there<br />
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- sample 7 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #7:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from LibriCSS)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/7.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												spk_1 <|0.00|> <|8.30|> again i thank you this incident i suppose will be renewed no more if i live to be an old woman i shall remember it thirty years hence as a bright dream<br />
+												spk_2 <|11.20|> <|16.15|> she is under sail but she is count timascheff's yacht he was right<br />
+												spk_3 <|19.06|> <|22.29|> i'll try if i know all the things i used to know<br />
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5" style="text-align: left">
+											spk_1 <|0.00|> <|8.35|>  again i thank you this incident i suppose will be renewed no more if i live to be an old woman i shall remember it thirty years hence as a bright dream<br />
+											spk_2 <|11.13|> <|16.20|> she is under sail but she is count timascheff's yacht he was right<br />
+											spk_3 <|19.03|> <|22.11|> i'll try if i know all the things i used to know<br />
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- sample 8 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #8:</strong></div>
+							
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from LibriCSS)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/asr/8.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" style="text-align: left">
+												spk_1 <|0.00|> <|6.38|> come come said holmes kindly it is human to err and at least no one can accuse you of being a callous criminal<br />
+												spk_2 <|6.26|> <|11.03|> what is your country olaf have you always been a thrall the thrall's eyes flashed<br />
+												spk_2 <|11.10|> <|13.09|> i painted the eyes red for anger<br />
+												spk_3 <|12.73|> <|26.39|> before the settlement of terms the administration must be possessed entirely by the parliaments of both kingdoms and how incompatible that scheme with the liberty of the king is easily imagined<br />
+												spk_4 <|24.51|> <|29.96|> i wish i hadn't cried so much said alice as she swam about trying to find her way out<br />
 
+											</td>
+										</tr>
+								  </tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>TellWhisper</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5" style="text-align: left">
+											spk_1 <|0.00|> <|6.19|> come come said holmes kindly it is human to err and at least no one can accuse you of being a callous criminal<br />
+											spk_2 <|6.25|> <|11.13|> what is your country olaf have you always been a thrall the thrall's eyes flashed<br />
+											spk_2 <|11.10|> <|13.12|> i painted the eyes red for anger<br />
+											spk_3 <|12.78|> <|26.28|> before the settlement of terms the administration must be possessed entirely by the parliaments of both kingdoms and how incompatible that scheme with the liberty of the king is easily imagined<br />
+											spk_4 <|24.53|> <|29.94|> i wish hadn't cried so much said alice as she swam about trying to find her way out<br />
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					
+						
+					<!-- /////////////////////-exp-2-////////////////////// -->
+					<a name="exp-2"></a>
+					<div class="section-content">
+						<div class="subsection-title"><a name="2"></a>3.2 Examples of Hyper-SD on Different Datasets</div>
+					</div>
+					
+					<!-- aishell4 -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #1:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AISHELL4)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/1.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/1-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/1-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #2:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AISHELL4)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/2.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/2-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/2-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Alimeeting -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #3:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AliMeeting)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/3.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/3-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/3-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #4:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AliMeeting)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/4.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/4-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/4-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					
+					<!-- AMI -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #5:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AMI)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/5.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/5-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/5-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #6:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from AMI)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/6.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/6-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/6-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<!-- MSDWILD -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #7:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from MSDWild)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/7.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/7-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/7-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #8:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from MSDWild)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/8.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/8-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/8-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					
+					<!-- RAMC -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #9:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from RAMC)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/9.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/9-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/9-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #10:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from RAMC)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/10.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/10-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/10-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- RAMC -->
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #11:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from VoxConverse)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/11.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/11-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/11-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="section-content">
+						<div class="subsection-exp-1">
+							<div class="module-title"><strong>Sample #12:</strong></div>
+							<div class="module-content">
+								<table class="table-sample">
+								  <thead>
+									<tr>
+										<th colspan="4" style="text-align: center"><strong>Speech (from VoxConverse)</strong></th>
+									</tr>
+								  </thead>
+								  <tbody>
+									<tr>
+										<td style="text-align: center" colspan="4">
+											</br>
+											<audio src="./audio/sd/12.wav" class="dialogue-wav" controls="" preload=""></audio>
+											</br>
+											</br>
+										</td>
+									</tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="module-content">
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Ground Truth</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/12-ref.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+								
+								<table class="table-sample">
+									<thead>
+										<tr>
+											<th colspan="5" style="text-align: center"><strong>Hyper-SD</strong></th>
+										</tr>
+									</thead>
+									<tbody>
+										<td colspan="5">
+											<img src="img/sd/12-sys.png" style="display:block; width: 100%; height: auto;"/>
+										</td>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					
+					
+				</div>
+			</div>
+		</div>
+		
+		
+	</body>
+</html>
