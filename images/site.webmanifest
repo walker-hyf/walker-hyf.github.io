@@ -1,0 +1,14 @@
+{
+    "name": "Yifan Hu",
+    "short_name": "Yifan Hu",
+    "icons": [
+       {
+          "src": "/images/yifan-hu.jpg",
+          "sizes": "512x512",
+          "type": "image/jpeg"
+       }
+    ],
+    "theme_color": "#FFFFFF",
+    "background_color": "#FFFFFF",
+    "display": "standalone"
+ }
